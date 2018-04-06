@@ -1,0 +1,13 @@
+# will be part of the endpoint of the Prisma api
+service: prisma-service
+
+# deployment stage: dev | stage | prod
+stage: dev
+
+# where is the data model
+datamodel: datamodel.graphql
+
+# You can only access the API when providing JWTs that are signed with this secret
+secret: mysecret123
+
+cluster: public-glitterknight-111/prisma-eu1
