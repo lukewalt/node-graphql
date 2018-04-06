@@ -1,61 +1,28 @@
 ///////////////////////////////////////////////////////////////////////////////////
+// NOTES
 // - GraphQL root types: Query Mutation Subscription correspond to operations
 // - Within these root types are fields and selection sets that define the querys/muts
 ///////////////////////////////////////////////////////////////////////////////////
 
 const { GraphQLServer } = require('graphql-yoga');
-
-
-let links = [
-      {
-        "id": "0",
-        "url": "www.howtographql.com",
-        "description": "Fullstack tutorial for GraphQL"
-      },
-      {
-        "id": "3",
-        "url": "www.prisma.io",
-        "description": "Prisma turns your database into a GraphQL API"
-      },
-      {
-        "id": "4",
-        "url": "www.luke.io",
-        "description": "writing GraphQL API"
-      },
-      {
-        "id": "5",
-        "url": "www.hca.org",
-        "description": "where health is"
-      }
-    ]
-
-let idCount = links.length;
+const { Prisma } = req('prisma-binding');
+// context.db : Prisma binding instance which turns the database schema into JavaScript functions can be invoked
 const resolvers = {
 	Query: {
 		info: () => `This is a GraphQL API`,
-		feed: () => links,
+		feed: (root, args, context, info) => {
+      return context.db.query.links({}, info)
+    },
 	},
   Mutation: {
-    post: (root, { description, url }) => {
-      const nulink = {
-        id: idCount++,
-        description,
-        url,
-      }
-      links.push(nulink)
-      return nulink
+    post: (root, { description, url }, context, info) => {
+      return context.db.mutation.createLink({
+        data: {
+          description,
+          url,
+        },
+      }, info)
     },
-    updateLink: (root, { id, description, url }) => {
-      const foundID = links.findIndex(i => i.id == id);
-      links[foundID] = { id, description, url };
-      return links[foundID]
-    },
-    deleteLink: (root, { id }) => {
-      const foundID = links.findIndex(i => i.id == id);
-      const link = links[foundID];
-      delete links[foundID];
-      return link;
-    }
   },
 	Link: {
 		id: (root) => root.id,
@@ -65,10 +32,31 @@ const resolvers = {
 }
 
 
-
+// instance of GQL server with instance of Prisma
 const server = new GraphQLServer({
 	typeDefs: './src/schema.graphql',
 	resolvers,
+  context: req => ({
+    ...req,
+    db: new Prisma({
+      typeDefs: 'src/generated/prisma.graphql',
+      endpoint: 'https://eu1.prisma.sh/public-glitterknight-111/prisma-service/dev',
+      secret: 'mysecret123',
+      debug: true,
+    })
+  }),
 })
 
 server.start(() => console.log('Server is running on port 4000'))
+
+// updateLink: (root, { id, description, url }) => {
+//   const foundID = links.findIndex(i => i.id == id);
+//   links[foundID] = { id, description, url };
+//   return links[foundID]
+// },
+// deleteLink: (root, { id }) => {
+//   const foundID = links.findIndex(i => i.id == id);
+//   const link = links[foundID];
+//   delete links[foundID];
+//   return link;
+// }
