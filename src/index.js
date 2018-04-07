@@ -5,30 +5,18 @@
 ///////////////////////////////////////////////////////////////////////////////////
 
 const { GraphQLServer } = require('graphql-yoga');
-const { Prisma } = req('prisma-binding');
+const { Prisma } = require('prisma-binding');
+
+const Query = require('./resolvers/Query')
+const Mutation = require('./resolvers/Mutation')
+const AuthPayload = require('./resolvers/AuthPayload')
+
+
 // context.db : Prisma binding instance which turns the database schema into JavaScript functions can be invoked
 const resolvers = {
-	Query: {
-		info: () => `This is a GraphQL API`,
-		feed: (root, args, context, info) => {
-      return context.db.query.links({}, info)
-    },
-	},
-  Mutation: {
-    post: (root, { description, url }, context, info) => {
-      return context.db.mutation.createLink({
-        data: {
-          description,
-          url,
-        },
-      }, info)
-    },
-  },
-	Link: {
-		id: (root) => root.id,
-    description: (root) => root.description,
-    url: (root) => root.url,
-	}
+  Query,
+  Mutation,
+  AuthPayload
 }
 
 
@@ -47,7 +35,7 @@ const server = new GraphQLServer({
   }),
 })
 
-server.start(() => console.log('Server is running on port 4000'))
+server.start(() => console.log('Server is running on port 4000'));
 
 // updateLink: (root, { id, description, url }) => {
 //   const foundID = links.findIndex(i => i.id == id);
@@ -60,3 +48,5 @@ server.start(() => console.log('Server is running on port 4000'))
 //   delete links[foundID];
 //   return link;
 // }
+// updateLink(id: ID!, url: String!, description: String!): Link!
+// deleteLink(id: ID!): Link
