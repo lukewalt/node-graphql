@@ -7,15 +7,17 @@
 const { GraphQLServer } = require('graphql-yoga');
 const { Prisma } = require('prisma-binding');
 
-const Query = require('./resolvers/Query')
-const Mutation = require('./resolvers/Mutation')
-const AuthPayload = require('./resolvers/AuthPayload')
+const Query = require('./resolvers/Query');
+const Mutation = require('./resolvers/Mutation');
+const AuthPayload = require('./resolvers/AuthPayload');
+const Subscription = require('./resolvers/Subscription');
 
 
 // context.db : Prisma binding instance which turns the database schema into JavaScript functions can be invoked
 const resolvers = {
   Query,
   Mutation,
+  Subscription,
   AuthPayload
 }
 
