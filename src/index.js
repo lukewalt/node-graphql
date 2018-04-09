@@ -9,8 +9,9 @@ const { Prisma } = require('prisma-binding');
 
 const Query = require('./resolvers/Query');
 const Mutation = require('./resolvers/Mutation');
-const AuthPayload = require('./resolvers/AuthPayload');
 const Subscription = require('./resolvers/Subscription');
+const AuthPayload = require('./resolvers/AuthPayload');
+const Feed = require('./resolvers/Feed');
 
 
 // context.db : Prisma binding instance which turns the database schema into JavaScript functions can be invoked
@@ -18,7 +19,8 @@ const resolvers = {
   Query,
   Mutation,
   Subscription,
-  AuthPayload
+  AuthPayload,
+  Feed
 }
 
 
