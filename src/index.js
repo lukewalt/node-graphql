@@ -4,6 +4,7 @@
 // - Within these root types are fields and selection sets that define the querys/muts
 ///////////////////////////////////////////////////////////////////////////////////
 
+const express = require('express');
 const { GraphQLServer } = require('graphql-yoga');
 const { Prisma } = require('prisma-binding');
 
@@ -39,18 +40,6 @@ const server = new GraphQLServer({
   }),
 })
 
-server.start(() => console.log('Server is running on port 4000'));
+server.express.use("/index", express.static('../public'));
 
-// updateLink: (root, { id, description, url }) => {
-//   const foundID = links.findIndex(i => i.id == id);
-//   links[foundID] = { id, description, url };
-//   return links[foundID]
-// },
-// deleteLink: (root, { id }) => {
-//   const foundID = links.findIndex(i => i.id == id);
-//   const link = links[foundID];
-//   delete links[foundID];
-//   return link;
-// }
-// updateLink(id: ID!, url: String!, description: String!): Link!
-// deleteLink(id: ID!): Link
+server.start(() => console.log('Server is running on port 4000'));

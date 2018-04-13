@@ -1,40 +1,20 @@
-async function feed(root, args, context, info) {
-  const where = args.filter
-  ? {
-    OR: [
-      { url_contains: args.filter },
-      { description_contains: args.filter },
-    ],
-  }
-  : {};
+async function feed(parent, args, context, info) {
+  const { filter, first, skip } = args // destructure input arguments
+  const where = filter
+    ? { OR: [{ url_contains: filter }, { description_contains: filter }] }
+    : {}
 
-  const queriedLinks = await context.db.query.links(
-    { where, skip: args.skip, first: args.first, orderBy: args.orderBy },
-    `{ id }`,
-  )
+  const allLinks = await context.db.query.links({})
+  const count = allLinks.length
 
-  const countSelectionSet = `
-    {
-      aggregate {
-        count
-      }
-    }
-  `
-
-  const linkConnection = await context.db.query.linksConnection({}, countSelectionSet)
+  const queriedLinkes = await context.db.query.links({ where, skip, first })
 
   return {
-    count: linkConnection.aggregate.count,
-    linkIds: queriedLinks.map(link => link.id),
+    linkIds: queriedLinkes.map(link => link.id),
+    count
   }
-
-}
-
-function users(root, args, context, info) {
-  return context.db.query.users({}, info)
 }
 
 module.exports = {
   feed,
-  users
 }
